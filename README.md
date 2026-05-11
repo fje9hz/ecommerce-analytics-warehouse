@@ -10,7 +10,7 @@ This isn't a "load CSV, write SELECT \*" project. It models the full path real a
 
 ## Why this project stands out
 
-Most SQL portfolio projects stop at "I queried a Kaggle dataset." This one demonstrates the things hiring managers actually ask about in data analyst interviews:
+Most SQL portfolio projects stop at "I queried a Kaggle dataset." This one demonstrates the things actually used in a data analyst's work:
 
 - **Dimensional modeling.** A real star schema with conformed dimensions, surrogate keys, and a Type 2 slowly-changing customer dimension.
 - **Data quality engineering.** Idempotent ETL, deduplication, soft-delete handling, late-arriving facts, and explicit data-quality checks baked into the pipeline.
