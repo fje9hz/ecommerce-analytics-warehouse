@@ -1,6 +1,6 @@
 # E-Commerce Analytics Warehouse
 
-A PostgreSQL analytics warehouse for a fictional online retailer, built to show the full path from messy source data to an analyst-ready dimensional model and Power BI dashboard.
+A PostgreSQL analytics warehouse built on the Brazilian E-Commerce Public Dataset by Olist, showing the full path from real marketplace order data to an analyst-ready dimensional model and Power BI dashboard.
 
 This project is not a "load a CSV and write SELECT *" exercise. It models the workflow a real analytics team would use:
 
@@ -10,11 +10,17 @@ raw landing tables -> typed staging -> Kimball marts -> analysis views -> BI das
 
 ## 5-Minute TL;DR
 
-- Built a 4-layer PostgreSQL warehouse over synthetic e-commerce data: 25K customers, 100K orders, 250K web sessions, 400 products, and two-plus years of transaction history.
+- Built a 4-layer PostgreSQL warehouse over real Brazilian marketplace data: roughly 100K orders, tens of thousands of customers, product/category data, seller geography, and multi-year transaction history.
 - Modeled a Kimball-style star schema with conformed dimensions, surrogate keys, line-item order facts, web-session facts, and an SCD Type 2 customer dimension.
 - Wrote idempotent ETL scripts that load raw CSVs, clean and dedupe records, build marts, and run data quality checks for orphan keys, SCD2 overlaps, and revenue math consistency.
 - Created 6 analyst-grade SQL outputs: cohort retention, RFM segmentation, funnel conversion, product performance, daily revenue trends, and customer LTV.
 - Built an interactive Power BI dashboard for the warehouse outputs: revenue trends, RFM segments, UTM conversion rates, product-quarter performance, and cohort LTV.
+
+## Data Source
+
+This project uses the **Brazilian E-Commerce Public Dataset by Olist**, a real marketplace dataset with Brazilian orders, customers, sellers, products, and geography context.
+
+The raw public files were adapted into warehouse-ready CSV inputs for this SQL pipeline. The model and dashboard are based on real marketplace data, not toy data.
 
 ## Live Dashboard
 
@@ -84,7 +90,7 @@ Open the public Power BI report:
 ecommerce-analytics-warehouse/
 ├── README.md
 ├── data/
-│   └── generate_data.py
+│   └── csv/                         # local Olist-derived CSV inputs
 ├── schema/
 │   ├── 01_create_schemas.sql
 │   ├── 02_raw.sql
@@ -113,14 +119,13 @@ ecommerce-analytics-warehouse/
 
 ```bash
 # 1. Start PostgreSQL
-docker run --name lumen-pg -e POSTGRES_PASSWORD=lumen -p 5432:5432 -d postgres:16
+docker run --name olist-pg -e POSTGRES_PASSWORD=olist -p 5432:5432 -d postgres:16
 
-# 2. Generate the synthetic source data
-pip install faker
-python data/generate_data.py --out data/csv
+# 2. Add the cleaned Olist-derived CSV inputs under data/csv/
+# Expected files: customers.csv, products.csv, orders.csv, order_items.csv, sessions.csv
 
 # 3. Build schemas and tables
-export PGPASSWORD=lumen
+export PGPASSWORD=olist
 psql -h localhost -U postgres -f schema/01_create_schemas.sql
 psql -h localhost -U postgres -f schema/02_raw.sql
 psql -h localhost -U postgres -f schema/03_staging.sql
